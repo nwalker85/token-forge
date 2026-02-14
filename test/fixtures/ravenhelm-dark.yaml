@@ -1,0 +1,130 @@
+name: ravenhelm-dark
+version: 1.1.0
+description: Default Ravenhelm glassmorphic dark theme
+
+colors:
+  background: "#0E1014"
+  surface: "#12141A"
+  surface_variant: "#171A21"
+  edge: "#2A2A2A"
+  edge_light: "#3A3A3A"
+  primary: "#7FA3C8"
+  primary_light: "#96B6D5"
+  primary_glow: "#89C7DE"
+  tertiary: "#4C1D95"
+  tertiary_light: "#7C3AED"
+  text:
+    primary: "#E6EAF2"
+    secondary: "#B6BDCB"
+    muted: "#8690A5"
+  glass:
+    background: "rgba(18,20,26,0.80)"
+    border: "rgba(255,255,255,0.10)"
+    highlight: "rgba(255,255,255,0.05)"
+  status:
+    success: "#5BB890"
+    warning: "#C4A45E"
+    error: "#C47272"
+    info: "#7FA3C8"
+  canvas:
+    background: "#0E1014"
+    grid: "#171A21"
+
+spacing:
+  xs: 4
+  sm: 8
+  md: 12
+  lg: 16
+  xl: 24
+  xxl: 32
+  xxxl: 48
+
+radii:
+  sm: 4
+  md: 6
+  lg: 8
+  xl: 12
+  full: 999
+
+typography:
+  family: Inter
+  display_family: Plus Jakarta Sans
+  mono_family: JetBrains Mono
+  scales:
+    display_large:  { size: 32, weight: 700, spacing: -0.5 }
+    display_medium: { size: 24, weight: 600, spacing: -0.25 }
+    heading_large:  { size: 20, weight: 600 }
+    heading_medium: { size: 16, weight: 600 }
+    heading_small:  { size: 14, weight: 600 }
+    body_large:     { size: 16, weight: 400 }
+    body_medium:    { size: 14, weight: 400 }
+    body_small:     { size: 12, weight: 400 }
+    label_large:    { size: 14, weight: 500 }
+    label_medium:   { size: 12, weight: 500 }
+    label_small:    { size: 10, weight: 500, spacing: 0.5 }
+    mono:           { size: 13, weight: 400 }
+    mono_small:     { size: 11, weight: 400 }
+
+glass:
+  blur_sigma: 12
+  border_width: 1
+
+entity_types:
+  # Infrastructure (blue family)
+  host:       { color: "#1E3A5F", icon: dns, category: infrastructure }
+  service:    { color: "#1D4ED8", icon: miscellaneous_services, category: infrastructure }
+  container:  { color: "#2563EB", icon: inventory_2, category: infrastructure }
+  database:   { color: "#3B82F6", icon: storage, category: infrastructure }
+  network:    { color: "#1E40AF", icon: lan, category: infrastructure }
+  storage:    { color: "#1E3A8A", icon: save, category: infrastructure }
+  facility:   { color: "#1E3050", icon: business, category: infrastructure }
+  equipment:  { color: "#2748A0", icon: precision_manufacturing, category: infrastructure }
+  # Software (purple family)
+  repo:       { color: "#6D28D9", icon: source, category: software }
+  api:        { color: "#7C3AED", icon: api, category: software }
+  ui:         { color: "#8B5CF6", icon: web, category: software }
+  endpoint:   { color: "#6366F1", icon: arrow_forward, category: software }
+  agent:      { color: "#4C1D95", icon: smart_toy, category: software }
+  project:    { color: "#5B21B6", icon: folder_special, category: software }
+  table:      { color: "#7E22CE", icon: table_chart, category: software }
+  # Security (red/amber family)
+  secret:     { color: "#DC2626", icon: key, category: security }
+  certificate: { color: "#D97706", icon: verified_user, category: security }
+  # Networking (teal family)
+  route:      { color: "#0D9488", icon: route, category: networking }
+  tunnel:     { color: "#0F766E", icon: vpn_key, category: networking }
+  domain:     { color: "#14B8A6", icon: language, category: networking }
+  # Documentation (grey)
+  doc:        { color: "#64748B", icon: description, category: documentation }
+  # Life Graph (green family)
+  person:     { color: "#059669", icon: person, category: life_graph }
+  vehicle:    { color: "#16A34A", icon: directions_car, category: life_graph }
+  goal:       { color: "#10B981", icon: flag, category: life_graph }
+  # Model Registry (orange family)
+  model_provider:     { color: "#EA580C", icon: cloud, category: model_registry }
+  model:              { color: "#F97316", icon: psychology, category: model_registry }
+  model_routing_rule: { color: "#D97706", icon: alt_route, category: model_registry }
+  model_defaults:     { color: "#E07020", icon: tune, category: model_registry }
+
+components:
+  entity_card:
+    border_radius: lg
+    padding: lg
+  lifecycle_badge:
+    states:
+      active:  { color: status.success, label: Active }
+      planned: { color: status.info, label: Planned }
+      dormant: { color: status.warning, label: Dormant }
+      retired: { color: text.muted, label: Retired }
+  criticality:
+    levels:
+      critical: { color: status.error, label: Critical }
+      high:     { color: status.warning, label: High }
+      medium:   { color: status.info, label: Medium }
+      low:      { color: text.muted, label: Low }
+  glass_container:
+    border_radius: lg
+    blur_sigma: glass.blur_sigma
+    border_width: glass.border_width
+  glass_panel:
+    glow_opacity: 0.05

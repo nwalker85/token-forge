@@ -1,0 +1,48 @@
+{
+  "name": "@nwalker/token-forge",
+  "version": "1.0.0",
+  "description": "Transform design token YAML to platform-specific formats (CSS, Tailwind, Dart)",
+  "type": "module",
+  "bin": {
+    "token-forge": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "design-tokens",
+    "css",
+    "tailwind",
+    "yaml",
+    "cli"
+  ],
+  "author": "Nate Walker",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "yaml": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
