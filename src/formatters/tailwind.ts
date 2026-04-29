@@ -1,4 +1,10 @@
-import type { TokenFile } from '../schema.js';
+import { resolveTokens } from '../resolver.js';
+import type { AnyTokenFile, ResolvedTokenSet } from '../schema.js';
+
+export interface TailwindOptions {
+  /** CSS variable prefix for v2 role/state entries. Default: token projection prefix or '--rh-' */
+  prefix?: string;
+}
 
 /**
  * Format a TokenFile as a Tailwind CSS theme extension.
@@ -8,48 +14,65 @@ import type { TokenFile } from '../schema.js';
  *   1. tokens.css defines the CSS vars
  *   2. tailwind.tokens.js maps Tailwind classes to those vars
  */
-export function formatTailwind(tokens: TokenFile): string {
+export function formatTailwind(tokens: AnyTokenFile, options: TailwindOptions = {}): string {
+  const resolved = resolveTokens(tokens);
+  const tokensLegacy = resolved.legacy;
+  const legacyPrefix = options.prefix ?? '--';
+  const v2Prefix = options.prefix ?? cssProjectionPrefix(resolved) ?? '--rh-';
   const colors: Record<string, string> = {
-    background: 'hsl(var(--background))',
-    surface: 'hsl(var(--surface))',
-    primary: 'hsl(var(--primary))',
+    background: `hsl(var(${legacyPrefix}background))`,
+    surface: `hsl(var(${legacyPrefix}surface))`,
+    primary: `hsl(var(${legacyPrefix}primary))`,
   };
 
-  if (tokens.colors.surface_variant) colors['surface-variant'] = 'hsl(var(--surface-variant))';
-  if (tokens.colors.edge) colors.edge = 'hsl(var(--edge))';
-  if (tokens.colors.edge_light) colors['edge-light'] = 'hsl(var(--edge-light))';
-  if (tokens.colors.primary_light) colors['primary-light'] = 'hsl(var(--primary-light))';
-  if (tokens.colors.primary_glow) colors['primary-glow'] = 'hsl(var(--primary-glow))';
-  if (tokens.colors.tertiary) colors.tertiary = 'hsl(var(--tertiary))';
-  if (tokens.colors.tertiary_light) colors['tertiary-light'] = 'hsl(var(--tertiary-light))';
+  if (tokensLegacy.colors.surface_variant) colors['surface-variant'] = `hsl(var(${legacyPrefix}surface-variant))`;
+  if (tokensLegacy.colors.edge) colors.edge = `hsl(var(${legacyPrefix}edge))`;
+  if (tokensLegacy.colors.edge_light) colors['edge-light'] = `hsl(var(${legacyPrefix}edge-light))`;
+  if (tokensLegacy.colors.primary_light) colors['primary-light'] = `hsl(var(${legacyPrefix}primary-light))`;
+  if (tokensLegacy.colors.primary_glow) colors['primary-glow'] = `hsl(var(${legacyPrefix}primary-glow))`;
+  if (tokensLegacy.colors.tertiary) colors.tertiary = `hsl(var(${legacyPrefix}tertiary))`;
+  if (tokensLegacy.colors.tertiary_light) colors['tertiary-light'] = `hsl(var(${legacyPrefix}tertiary-light))`;
 
-  colors['text-primary'] = 'hsl(var(--text-primary))';
-  colors['text-secondary'] = 'hsl(var(--text-secondary))';
-  colors['text-muted'] = 'hsl(var(--text-muted))';
+  colors['text-primary'] = `hsl(var(${legacyPrefix}text-primary))`;
+  colors['text-secondary'] = `hsl(var(${legacyPrefix}text-secondary))`;
+  colors['text-muted'] = `hsl(var(${legacyPrefix}text-muted))`;
 
-  colors['status-success'] = 'hsl(var(--status-success))';
-  colors['status-warning'] = 'hsl(var(--status-warning))';
-  colors['status-error'] = 'hsl(var(--status-error))';
-  if (tokens.colors.status.info) colors['status-info'] = 'hsl(var(--status-info))';
+  colors['status-success'] = `hsl(var(${legacyPrefix}status-success))`;
+  colors['status-warning'] = `hsl(var(${legacyPrefix}status-warning))`;
+  colors['status-error'] = `hsl(var(${legacyPrefix}status-error))`;
+  if (tokensLegacy.colors.status.info) colors['status-info'] = `hsl(var(${legacyPrefix}status-info))`;
+
+  if (resolved.sourceKind === 'v2') {
+    colors['surface-card'] = `hsl(var(${v2Prefix}surface-card))`;
+    colors['surface-card-muted'] = `hsl(var(${v2Prefix}surface-card-muted))`;
+    colors['border-default'] = `hsl(var(${v2Prefix}border-default))`;
+    colors['border-focus'] = `hsl(var(${v2Prefix}border-focus))`;
+    colors['action-primary-bg'] = `hsl(var(${v2Prefix}action-primary-bg))`;
+    colors['action-primary-fg'] = `hsl(var(${v2Prefix}action-primary-fg))`;
+    colors['agent-running'] = `hsl(var(${v2Prefix}agent-running))`;
+    colors['agent-blocked'] = `hsl(var(${v2Prefix}agent-blocked))`;
+    colors['contract-pending'] = `hsl(var(${v2Prefix}contract-pending))`;
+    colors['runtime-offline'] = `hsl(var(${v2Prefix}runtime-offline))`;
+  }
 
   const spacing: Record<string, string> = {};
-  for (const key of Object.keys(tokens.spacing)) {
-    spacing[key] = `var(--spacing-${key})`;
+  for (const key of Object.keys(tokensLegacy.spacing)) {
+    spacing[key] = `var(${legacyPrefix}spacing-${key})`;
   }
 
   const borderRadius: Record<string, string> = {};
-  for (const key of Object.keys(tokens.radii)) {
-    borderRadius[key] = `var(--radius-${key})`;
+  for (const key of Object.keys(tokensLegacy.radii)) {
+    borderRadius[key] = `var(${legacyPrefix}radius-${key})`;
   }
 
   const fontFamily: Record<string, string[]> = {
-    sans: [`var(--font-family)`, 'sans-serif'],
+    sans: [`var(${legacyPrefix}font-family)`, 'sans-serif'],
   };
-  if (tokens.typography.display_family) {
-    fontFamily.display = [`var(--font-display)`, 'serif'];
+  if (tokensLegacy.typography.display_family) {
+    fontFamily.display = [`var(${legacyPrefix}font-display)`, 'serif'];
   }
-  if (tokens.typography.mono_family) {
-    fontFamily.mono = [`var(--font-mono)`, 'monospace'];
+  if (tokensLegacy.typography.mono_family) {
+    fontFamily.mono = [`var(${legacyPrefix}font-mono)`, 'monospace'];
   }
 
   const config = {
@@ -64,10 +87,17 @@ export function formatTailwind(tokens: TokenFile): string {
   };
 
   const lines: string[] = [];
-  lines.push(`// ${tokens.name} v${tokens.version} — generated by token-forge`);
+  lines.push(`// ${tokensLegacy.name} v${tokensLegacy.version} — generated by token-forge`);
   lines.push('');
   lines.push(`export default ${JSON.stringify(config, null, 2)};`);
   lines.push('');
 
   return lines.join('\n');
+}
+
+function cssProjectionPrefix(resolved: ResolvedTokenSet): string | undefined {
+  const css = resolved.projections?.css;
+  return css && typeof css === 'object' && !Array.isArray(css) && typeof css.prefix === 'string'
+    ? css.prefix
+    : undefined;
 }

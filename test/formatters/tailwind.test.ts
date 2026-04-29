@@ -5,6 +5,10 @@ import { parseTokens } from '../../src/parser.js';
 import { formatTailwind } from '../../src/formatters/tailwind.js';
 
 const fixture = readFileSync(resolve(import.meta.dirname, '../fixtures/ravenhelm-dark.yaml'), 'utf8');
+const v2Fixture = readFileSync(
+  resolve(import.meta.dirname, '../fixtures/ravenhelm-operational-black.yaml'),
+  'utf8'
+);
 
 describe('Tailwind formatter', () => {
   it('produces a valid JS module export', () => {
@@ -55,5 +59,43 @@ describe('Tailwind formatter', () => {
     const output = formatTailwind(tokens);
 
     expect(output).toContain('ravenhelm-dark v1.1.0');
+  });
+
+  it('does not add v2 role and state entries for v1 tokens', () => {
+    const tokens = parseTokens(fixture);
+    const output = formatTailwind(tokens);
+
+    expect(output).not.toContain('surface-card');
+    expect(output).not.toContain('agent-running');
+  });
+
+  it('adds v2 role and state entries', () => {
+    const tokens = parseTokens(v2Fixture);
+    const output = formatTailwind(tokens);
+
+    expect(output).toContain('"surface-card": "hsl(var(--rh-surface-card))"');
+    expect(output).toContain('"surface-card-muted": "hsl(var(--rh-surface-card-muted))"');
+    expect(output).toContain('"border-default": "hsl(var(--rh-border-default))"');
+    expect(output).toContain('"border-focus": "hsl(var(--rh-border-focus))"');
+    expect(output).toContain('"action-primary-bg": "hsl(var(--rh-action-primary-bg))"');
+    expect(output).toContain('"action-primary-fg": "hsl(var(--rh-action-primary-fg))"');
+    expect(output).toContain('"agent-running": "hsl(var(--rh-agent-running))"');
+    expect(output).toContain('"agent-blocked": "hsl(var(--rh-agent-blocked))"');
+    expect(output).toContain('"contract-pending": "hsl(var(--rh-contract-pending))"');
+    expect(output).toContain('"runtime-offline": "hsl(var(--rh-runtime-offline))"');
+  });
+
+  it('uses custom prefixes for v2 role and state entries', () => {
+    const tokens = parseTokens(v2Fixture);
+    const output = formatTailwind(tokens, { prefix: '--tf-' });
+
+    expect(output).toContain('"background": "hsl(var(--tf-background))"');
+    expect(output).toContain('"xs": "var(--tf-spacing-xs)"');
+    expect(output).toContain('"sm": "var(--tf-radius-sm)"');
+    expect(output).toContain('"sans": [\n          "var(--tf-font-family)"');
+    expect(output).toContain('"surface-card": "hsl(var(--tf-surface-card))"');
+    expect(output).toContain('"agent-running": "hsl(var(--tf-agent-running))"');
+    expect(output).not.toContain('var(--background)');
+    expect(output).not.toContain('--rh-surface-card');
   });
 });

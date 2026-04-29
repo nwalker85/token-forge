@@ -1,6 +1,6 @@
 {
   "name": "@nwalker/token-forge",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Transform design token YAML to platform-specific formats (CSS, Tailwind, Dart)",
   "type": "module",
   "bin": {
