@@ -7,21 +7,22 @@ import chalk from 'chalk';
 import { parseTokens } from './parser.js';
 import { formatCss } from './formatters/css.js';
 import { formatTailwind } from './formatters/tailwind.js';
+import { formatJson } from './formatters/json.js';
 
 const program = new Command();
 
 program
   .name('token-forge')
   .description('Transform design token YAML to platform-specific formats')
-  .version('1.0.0');
+  .version('2.0.0');
 
 program
   .command('build')
   .description('Build tokens from YAML source')
   .requiredOption('-i, --input <file>', 'Input YAML token file')
   .option('-o, --output <file>', 'Output file (default: stdout)')
-  .option('-f, --format <format>', 'Output format: css, tailwind', 'css')
-  .option('--prefix <prefix>', 'CSS variable prefix', '--')
+  .option('-f, --format <format>', 'Output format: css, tailwind, json, json-resolved, json-legacy', 'css')
+  .option('--prefix <prefix>', 'CSS variable prefix')
   .option('--selector <selector>', 'CSS selector scope', ':root')
   .option('--color-format <format>', 'Color format: hsl, hex', 'hsl')
   .action((options) => {
@@ -40,7 +41,18 @@ program
           });
           break;
         case 'tailwind':
-          output = formatTailwind(tokens);
+          output = formatTailwind(tokens, {
+            prefix: options.prefix,
+          });
+          break;
+        case 'json':
+          output = formatJson(tokens, 'raw');
+          break;
+        case 'json-resolved':
+          output = formatJson(tokens, 'resolved');
+          break;
+        case 'json-legacy':
+          output = formatJson(tokens, 'legacy');
           break;
         default:
           console.error(chalk.red(`Unknown format: ${options.format}`));

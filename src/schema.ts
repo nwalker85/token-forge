@@ -1,10 +1,21 @@
-/**
- * Token schema interfaces — mirrors Loki's YAML token structure.
- *
- * These types describe the shape of a parsed theme YAML file.
- * Optional fields match keys that may or may not appear in a given theme.
- */
+export type TokenKind = 'v1' | 'v2';
 
+export type PrimitiveValue =
+  | string
+  | number
+  | boolean
+  | null
+  | PrimitiveValue[]
+  | { [key: string]: PrimitiveValue };
+
+export type TokenMap = Record<string, PrimitiveValue>;
+
+export type AnyTokenFile = TokenFile | V1TokenFile | V2TokenFile;
+export type ParsedTokenFile = V1TokenFile | V2TokenFile;
+
+/**
+ * Token Forge v1 schema — mirrors Loki's YAML token structure.
+ */
 export interface TokenFile {
   name: string;
   version: string;
@@ -16,6 +27,36 @@ export interface TokenFile {
   glass: GlassTokens;
   entity_types?: Record<string, EntityTypeToken>;
   components?: Record<string, unknown>;
+}
+
+export type V1TokenFile = TokenFile & { kind: 'v1' };
+
+export interface V2TokenFile {
+  kind: 'v2';
+  name: string;
+  version: string;
+  description?: string;
+  primitives: TokenMap;
+  roles: TokenMap;
+  states: TokenMap;
+  density: TokenMap;
+  components: TokenMap;
+  projections?: TokenMap;
+}
+
+export interface ResolvedTokenSet {
+  kind: 'resolved';
+  sourceKind: TokenKind;
+  name: string;
+  version: string;
+  description?: string;
+  primitives: TokenMap;
+  roles: TokenMap;
+  states: TokenMap;
+  density: TokenMap;
+  components: TokenMap;
+  projections?: TokenMap;
+  legacy: TokenFile;
 }
 
 export interface ColorTokens {
